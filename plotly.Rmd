@@ -48,7 +48,7 @@ gapminder %>% filter(country == 'Hungary') %>%
     plot_ly(x = ~year, y = ~gdpPercap) %>% add_lines()
 ```
 
-## Groups #1
+## Groups #1: map continent to color
 
 ```{r}
 gapminder_continent %>%
@@ -75,7 +75,7 @@ gapminder_continent %>%
 ```
 
 
-## Groups #2
+## Groups #2: understand grouped data.frame
 ```{r}
 gapminder_continent %>%
     plot_ly(x = ~year, y = ~gdpPercap) %>% 
@@ -91,6 +91,7 @@ plt <- gapminder_continent %>%
 plt %>% filter(continent == 'Europe') %>% add_lines(name = 'Europe')
 ```
 
+
 ## Modifyer function
 ```{r}
 layer_continent <- function(plot, name) {
@@ -98,6 +99,7 @@ layer_continent <- function(plot, name) {
 }
 plt %>% add_fun(layer_continent, 'Europe') %>% add_fun(layer_continent, 'Africa')
 ```
+
 
 ## Use with shiny {.smaller}
 
