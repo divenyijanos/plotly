@@ -7,7 +7,6 @@ output:
     ioslides_presentation:
         css: plotly.css
         widescreen: true
-        logo: em-logo-dark.svg
 ---
 
 ## Settings
@@ -85,22 +84,20 @@ gapminder_continent %>%
 
 
 ## Modifyer function
-```{r, eval=FALSE}
+```{r}
 plt <- gapminder_continent %>%
     plot_ly(x = ~year, y = ~gdpPercap) %>% 
     add_lines(alpha = 0.5, name = 'Continents', hoverinfo = 'none')
 plt %>% filter(continent == 'Europe') %>% add_lines(name = 'Europe')
 ```
-<iframe src="europe.html" style="padding:0px;position:absolute;border:none;width:80%;height:60%"></iframe>
 
 ## Modifyer function
-```{r, eval=FALSE}
+```{r}
 layer_continent <- function(plot, name) {
     plot %>% filter(continent == name) %>% add_lines(name = name)
 }
 plt %>% add_fun(layer_continent, 'Europe') %>% add_fun(layer_continent, 'Africa')
 ```
-<iframe src="europe_africa.html" style="position:absolute;border:none;width:80%;height:60%"></iframe>
 
 ## Use with shiny {.smaller}
 
