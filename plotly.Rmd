@@ -1,0 +1,183 @@
+
+---
+title: Plotly
+author: Divényi János
+date: 2017-10-04
+output:
+    ioslides_presentation:
+        css: plotly.css
+        widescreen: true
+        logo: em-logo-dark.svg
+---
+
+## Settings
+
+```{r options, echo=FALSE}
+knitr::opts_chunk$set(fig.height=4)
+```
+
+```{r setup, message=FALSE}
+library(plotly)
+```
+
+```{r data, message=FALSE}
+data(gapminder, package = 'gapminder')
+gapminder_continent <- gapminder %>% 
+    group_by(continent, year) %>% 
+    dplyr::summarise(gdpPercap = median(gdpPercap)) 
+```
+
+## ggplot
+
+```{r}
+gapminder %>% filter(country == 'Hungary') %>%
+    ggplot(aes(x = year, y = gdpPercap)) + geom_line()
+```
+
+## ggplotly
+
+```{r}
+p <- gapminder %>% filter(country == 'Hungary') %>%
+    ggplot(aes(x = year, y = gdpPercap)) + geom_line()
+ggplotly(p)
+```
+
+## plot_ly
+
+```{r}
+gapminder %>% filter(country == 'Hungary') %>%
+    plot_ly(x = ~year, y = ~gdpPercap) %>% add_lines()
+```
+
+## Groups #1
+
+```{r}
+gapminder_continent %>%
+    plot_ly(x = ~year, y = ~gdpPercap) %>% 
+    add_lines(color = ~continent)
+```
+
+## Settings: color vs colors
+
+```{r}
+gapminder_continent %>%
+    plot_ly(x = ~year, y = ~gdpPercap) %>% 
+    add_lines(color = ~continent, colors = 'Dark2')
+```
+
+## Subplot
+
+```{r, warning=FALSE}
+gapminder_continent %>%
+    mutate(id = as.integer(continent)) %>%
+    plot_ly(x = ~year, y = ~gdpPercap) %>% 
+    add_lines(color = ~continent, yaxis = ~paste0('y', id)) %>%
+    subplot(nrows = 5, shareX = TRUE)
+```
+
+
+## Groups #2
+```{r}
+gapminder_continent %>%
+    plot_ly(x = ~year, y = ~gdpPercap) %>% 
+    add_lines()
+```
+
+
+## Modifyer function
+```{r, eval=FALSE}
+plt <- gapminder_continent %>%
+    plot_ly(x = ~year, y = ~gdpPercap) %>% 
+    add_lines(alpha = 0.5, name = 'Continents', hoverinfo = 'none')
+plt %>% filter(continent == 'Europe') %>% add_lines(name = 'Europe')
+```
+<iframe src="europe.html" style="padding:0px;position:absolute;border:none;width:80%;height:60%"></iframe>
+
+## Modifyer function
+```{r, eval=FALSE}
+layer_continent <- function(plot, name) {
+    plot %>% filter(continent == name) %>% add_lines(name = name)
+}
+plt %>% add_fun(layer_continent, 'Europe') %>% add_fun(layer_continent, 'Africa')
+```
+<iframe src="europe_africa.html" style="position:absolute;border:none;width:80%;height:60%"></iframe>
+
+## Use with shiny {.smaller}
+
+```{r, eval=FALSE}
+library(shiny)
+shinyApp(
+    
+    ui = fluidPage(
+        selectInput(
+            "country", "Country:", 
+            choices = filter(gapminder, continent == 'Europe')$country,
+            multiple = TRUE
+        ),
+        plotlyOutput("gdp_plot")
+    ),
+    
+    server = function(input, output) {
+        <generate-base-plot>
+        
+        output$gdp_plot <- renderPlotly({
+            for (c in input$country) {
+                european_countries <- european_countries %>% add_fun(layer_country, c)
+            }
+            layout(european_countries, hovermode = 'x')
+        })
+    }
+)
+```
+
+## Slider
+
+```{r}
+gapminder %>% filter(country == 'Hungary') %>%
+    plot_ly(x = ~year, y = ~gdpPercap) %>% add_lines() %>%
+    rangeslider()
+```
+
+
+## Animation
+
+```{r}
+gapminder %>%
+    plot_ly(x = ~gdpPercap, y = ~lifeExp, size = ~pop, text = ~country) %>%
+    add_markers(color = ~continent, frame = ~year, ids = ~country) %>%
+    layout(xaxis = list(type = "log"))
+```
+
+## Export
+```{r, eval=FALSE}
+p <- gapminder %>%
+    plot_ly(x = ~gdpPercap, y = ~lifeExp, size = ~pop, text = ~country) %>%
+    add_markers(color = ~continent, frame = ~year, ids = ~country) %>%
+    layout(xaxis = list(type = "log"))
+```
+
+html
+```{r, eval=FALSE}
+htmlwidgets::saveWidget(p, 'gapminder.html')
+```
+
+static image
+```{r, eval=FALSE}
+export(p, file = 'gapminder.png')
+```
+
+## Thank you {.flexbox .vcenter}
+
+@divenyijanos
+
+[divenyijanos.github.io](divenyijanos.github.io)
+
+[github.com/divenyijanos/plotly](github.com/divenyijanos/plotly)
+
+<br>
+
+**External resources**
+
+[plotly-book.cpsievert.me](plotly-book.cpsievert.me)
+
+[plot.ly/r/](plot.ly/r/)
