@@ -7,6 +7,7 @@ output:
     ioslides_presentation:
         css: plotly.css
         widescreen: true
+        logo: em-logo-dark.svg
 ---
 
 ## Settings
@@ -84,22 +85,22 @@ gapminder_continent %>%
 
 
 ## Modifyer function
-```{r}
+```{r, eval=FALSE}
 plt <- gapminder_continent %>%
     plot_ly(x = ~year, y = ~gdpPercap) %>% 
     add_lines(alpha = 0.5, name = 'Continents', hoverinfo = 'none')
 plt %>% filter(continent == 'Europe') %>% add_lines(name = 'Europe')
 ```
-
+<iframe src="europe.html" style="padding:0px;position:absolute;border:none;width:80%;height:60%"></iframe>
 
 ## Modifyer function
-```{r}
+```{r, eval=FALSE}
 layer_continent <- function(plot, name) {
     plot %>% filter(continent == name) %>% add_lines(name = name)
 }
 plt %>% add_fun(layer_continent, 'Europe') %>% add_fun(layer_continent, 'Africa')
 ```
-
+<iframe src="europe_africa.html" style="position:absolute;border:none;width:80%;height:60%"></iframe>
 
 ## Use with shiny {.smaller}
 
@@ -142,7 +143,7 @@ gapminder %>% filter(country == 'Hungary') %>%
 
 ```{r}
 gapminder %>%
-    plot_ly(x = ~gdpPercap, y = ~lifeExp, size = ~pop, text = ~country) %>%
+    plot_ly(x = ~gdpPercap, y = ~lifeExp, size = ~pop) %>%
     add_markers(color = ~continent, frame = ~year, ids = ~country) %>%
     layout(xaxis = list(type = "log"))
 ```
@@ -150,7 +151,7 @@ gapminder %>%
 ## Export
 ```{r, eval=FALSE}
 p <- gapminder %>%
-    plot_ly(x = ~gdpPercap, y = ~lifeExp, size = ~pop, text = ~country) %>%
+    plot_ly(x = ~gdpPercap, y = ~lifeExp, size = ~pop) %>%
     add_markers(color = ~continent, frame = ~year, ids = ~country) %>%
     layout(xaxis = list(type = "log"))
 ```
@@ -179,4 +180,4 @@ export(p, file = 'gapminder.png')
 
 [plotly-book.cpsievert.me](plotly-book.cpsievert.me)
 
-[plot.ly/r/](plot.ly/r/)
+[plot.ly/r](plot.ly/r)
